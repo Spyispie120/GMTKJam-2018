@@ -10,12 +10,18 @@ public class Player : MonoBehaviour
     [SerializeField] private float speed;
     [SerializeField] private Vector2 JUMP_FORCE;  // readonly
     [SerializeField] private Vector2 COUNTER_JUMP_FORCE;  // readonly
-    [SerializeField] private float DASH_FORCE;  // readonly
+    [SerializeField] private float DASH_FORCE = 10f;  // readonly
+    [SerializeField] private float DASH_DRAG = 10f;
+    [SerializeField] private float DASH_TIME = 0.3f;
 
     private bool facingRight;
+
     private bool canJump;
     private bool isJumping;
     private bool jumpKeyHeld;
+
+    private bool canDash;
+    private bool isDashing;
 
     // Start is called before the first frame update
     void Start()
@@ -28,6 +34,19 @@ public class Player : MonoBehaviour
     void Update()
     {
         direction = GetDashDirection();
+
+        // dashing
+        if (Input.GetKeyDown(KeyCode.J) && !isDashing)
+        {
+            rb.velocity = Vector2.zero;
+            rb.AddForce(direction * DASH_FORCE * rb.mass, ForceMode2D.Impulse);
+            //isDashing = true;
+            StartCoroutine(DashWait());
+        }
+
+        if (isDashing) return;
+
+        // jumping
         if (Input.GetKeyDown(KeyCode.Space))
         {
             jumpKeyHeld = true;
@@ -38,18 +57,31 @@ public class Player : MonoBehaviour
         } else if (Input.GetKeyUp(KeyCode.Space))
         {
             jumpKeyHeld = false;
-        }
+        } 
+    }
 
-        if (Input.GetKeyDown(KeyCode.J))
-        {
-            rb.velocity = Vector2.zero;
-            rb.AddForce(direction * DASH_FORCE * rb.mass, ForceMode2D.Impulse);
-        }
+    IEnumerator DashWait()
+    {
+        
+        float originalGravity = rb.gravityScale;
+        rb.gravityScale = 0;
+        float originalDrag = rb.drag;
+        rb.drag = DASH_DRAG;
+        isDashing = true;
+
+        yield return new WaitForSeconds(DASH_TIME);
+
+        rb.gravityScale = originalGravity;
+        rb.drag = originalDrag;
+        isDashing = false;
     }
 
     void FixedUpdate()
     {
+        if (isDashing) return;
+
         rb.velocity = Walk();
+
         // controls height if jump key is not held
         if (isJumping && IsMovingUp() && !jumpKeyHeld)
         {
@@ -102,6 +134,8 @@ public class Player : MonoBehaviour
                 {
                     canJump = true;
                     isJumping = false;
+
+                    //canDash = true;
                 }
             }
         }
