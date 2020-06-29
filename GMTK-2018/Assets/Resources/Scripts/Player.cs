@@ -20,7 +20,7 @@ public class Player : MonoBehaviour
     private bool isJumping;
     private bool jumpKeyHeld;
 
-    private bool canDash;
+    private bool canDash = true;
     private bool isDashing;
 
     // Start is called before the first frame update
@@ -36,11 +36,12 @@ public class Player : MonoBehaviour
         direction = GetDashDirection();
 
         // dashing
-        if (Input.GetKeyDown(KeyCode.J) && !isDashing)
+        if (Input.GetKeyDown(KeyCode.J) && canDash && !isDashing)
         {
             rb.velocity = Vector2.zero;
             rb.AddForce(direction * DASH_FORCE * rb.mass, ForceMode2D.Impulse);
             //isDashing = true;
+            canDash = false;
             StartCoroutine(DashWait());
         }
 
@@ -68,6 +69,7 @@ public class Player : MonoBehaviour
         float originalDrag = rb.drag;
         rb.drag = DASH_DRAG;
         isDashing = true;
+        
 
         yield return new WaitForSeconds(DASH_TIME);
 
@@ -122,6 +124,14 @@ public class Player : MonoBehaviour
             facingRight = horizontal > 0;
         }
         return new Vector2(horizontal * speed * Time.deltaTime, rb.velocity.y);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Floor"))
+        {
+            canDash = true;
+        }
     }
 
     private void OnCollisionStay2D(Collision2D collision)
