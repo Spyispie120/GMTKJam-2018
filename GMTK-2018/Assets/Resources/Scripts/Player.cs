@@ -172,7 +172,8 @@ public class Player : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Floor"))
         {
-            foreach(ContactPoint2D point in collision.contacts)
+            canDash = true;
+            foreach (ContactPoint2D point in collision.contacts)
             {
                 if (point.normal.y >= 0.05f)
                 {
