@@ -5,6 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private Rigidbody2D rb;
+    private Animator anim;
     private Vector2 direction;
 
     [SerializeField] private float speed;
@@ -13,6 +14,11 @@ public class Player : MonoBehaviour
     [SerializeField] private float DASH_FORCE = 10f;  // readonly
     [SerializeField] private float DASH_DRAG = 10f;
     [SerializeField] private float DASH_TIME = 0.3f;
+    [SerializeField] private float TORQUE_FORCE = 5f;
+
+    [SerializeField] private float BOUNCE_FORCE = 10f / 3f;
+    [SerializeField] private float BOUNCE_DRAG = 0.1f;
+    [SerializeField] private float BOUNCE_TIME = 0.25f;
 
     private float GRAVITY;
     private float DRAG;
@@ -22,26 +28,32 @@ public class Player : MonoBehaviour
 
     [SerializeField] private float JUMP_TIMER = 0.1f;
     private float jumpTimerLeft;
-    private bool canJump;
+    private bool isGrounded;  // i.e. canJump
     private bool isJumping;
     private bool jumpKeyHeld;
 
     private bool canDash = true;
     private bool isDashing;
 
+    private bool isWalking;
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
         facingRight = true;
         GRAVITY = rb.gravityScale;
         DRAG = rb.drag;
         jumpTimerLeft = 0;
+        isWalking = true;
+        rb.freezeRotation = true;
     }
 
     // Update is called once per frame
     void Update()
     {
+        anim.SetBool("walking", isWalking);
         lastVelocity = rb.velocity.normalized;
         direction = GetDashDirection();
         if (jumpTimerLeft > 0) jumpTimerLeft -= Time.deltaTime;
@@ -78,7 +90,7 @@ public class Player : MonoBehaviour
             }
 
             //jumpKeyHeld = true;
-            if (canJump)
+            if (isGrounded)
             {
                 Jump();
                 jumpTimerLeft = 0;
@@ -88,6 +100,7 @@ public class Player : MonoBehaviour
         //{
         //    jumpKeyHeld = false;
         //} 
+        anim.SetBool("walking", isWalking);
     }
 
     IEnumerator Dash(Vector2 dir, float force, float duration, float drag)
@@ -96,6 +109,10 @@ public class Player : MonoBehaviour
         rb.AddForce(dir * force * rb.mass, ForceMode2D.Impulse);
         Debug.Log(rb.velocity);
         //Debug.DrawRay(transform.position, rb.velocity.normalized, Color.blue, 1f);
+
+        isWalking = false;
+        rb.freezeRotation = false;
+        rb.AddTorque(facingRight ? -TORQUE_FORCE : TORQUE_FORCE);
 
         rb.gravityScale = 0;
         rb.drag = drag;
@@ -116,6 +133,7 @@ public class Player : MonoBehaviour
         if (isDashing) return;
 
         rb.velocity = Walk();
+        anim.SetFloat("speed", rb.velocity.magnitude);
 
         // controls height if jump key is not held
         if (isJumping && IsMovingUp() && !jumpKeyHeld)
@@ -147,6 +165,9 @@ public class Player : MonoBehaviour
     void Jump()
     {
         rb.AddForce(JUMP_FORCE * rb.mass, ForceMode2D.Impulse);
+        isWalking = false;
+        rb.freezeRotation = false;
+        rb.AddTorque(facingRight ? -TORQUE_FORCE : TORQUE_FORCE);
     }
 
     Vector2 Walk()
@@ -154,7 +175,19 @@ public class Player : MonoBehaviour
         float horizontal = Input.GetAxisRaw("Horizontal");
         if (horizontal != 0)
         {
+            bool prev = facingRight;
             facingRight = horizontal > 0;
+            int flip = prev == facingRight ? 1 : -1;
+            transform.localScale = new Vector3(flip * transform.localScale.x, transform.localScale.y, transform.localScale.z);
+            if (isGrounded && !isWalking)
+            {
+                
+                rb.freezeRotation = true;
+                transform.rotation = Quaternion.identity;
+                rb.AddForce(Vector2.up * DASH_FORCE);
+                isWalking = true;
+                //StartCoroutine(Dash(Vector2.up, DASH_FORCE / 3, 0.1f, 0.25f));
+            }
         }
         return new Vector2(horizontal * speed * Time.deltaTime, rb.velocity.y);
     }
@@ -165,7 +198,7 @@ public class Player : MonoBehaviour
         {
             if (isDashing)
             {
-                StartCoroutine(Dash(Vector3.Reflect(lastVelocity, collision.contacts[0].normal), DASH_FORCE / 3, 0.1f, 0.25f));
+                StartCoroutine(Dash(Vector3.Reflect(lastVelocity, collision.contacts[0].normal), BOUNCE_FORCE, BOUNCE_DRAG, BOUNCE_TIME));
             }
             canDash = true;
         }
@@ -180,7 +213,7 @@ public class Player : MonoBehaviour
             {
                 if (point.normal.y >= 0.05f)
                 {
-                    canJump = true;
+                    isGrounded = true;
                     isJumping = false;
 
                     //canDash = true;
@@ -194,7 +227,9 @@ public class Player : MonoBehaviour
         if (collision.gameObject.CompareTag("Floor"))
         {
             isJumping = true;
-            canJump = false;
+            isGrounded = false;
+            //isWalking = false;
+            //rb.freezeRotation = false;
         }
     }
 }
