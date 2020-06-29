@@ -54,7 +54,7 @@ public class Player : MonoBehaviour
             //isDashing = true;
             canDash = false;
             
-            StartCoroutine(Dash(direction, DASH_TIME, DASH_DRAG));
+            StartCoroutine(Dash(direction, DASH_FORCE, DASH_TIME, DASH_DRAG));
             
         }
 
@@ -90,21 +90,24 @@ public class Player : MonoBehaviour
         //} 
     }
 
-    IEnumerator Dash(Vector2 dir, float duration, float drag)
+    IEnumerator Dash(Vector2 dir, float force, float duration, float drag)
     {
         rb.velocity = Vector2.zero;
-        rb.AddForce(dir * DASH_FORCE * rb.mass, ForceMode2D.Impulse);
+        rb.AddForce(dir * force * rb.mass, ForceMode2D.Impulse);
         Debug.Log(rb.velocity);
         //Debug.DrawRay(transform.position, rb.velocity.normalized, Color.blue, 1f);
 
         rb.gravityScale = 0;
-        rb.drag = DASH_DRAG;
+        rb.drag = drag;
         isDashing = true;
 
         yield return new WaitForSeconds(duration);
 
         rb.gravityScale = GRAVITY;
         rb.drag = DRAG;
+
+        yield return new WaitForSeconds(0.1f);
+
         isDashing = false;
     }
 
@@ -162,7 +165,7 @@ public class Player : MonoBehaviour
         {
             if (isDashing)
             {
-                StartCoroutine(Dash(Vector3.Reflect(lastVelocity, collision.contacts[0].normal), 0.1f, 0));
+                StartCoroutine(Dash(Vector3.Reflect(lastVelocity, collision.contacts[0].normal), DASH_FORCE / 3, 0.1f, 0.25f));
             }
             canDash = true;
         }
