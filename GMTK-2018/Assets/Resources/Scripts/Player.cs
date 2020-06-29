@@ -175,6 +175,8 @@ public class Player : MonoBehaviour
     {
         // CORRECT
         isJumping = true;
+        rb.velocity = new Vector2(rb.velocity.x, 0);  // seems to fix bug where super jumping can be performed
+                                                      // while still retracted in ball
         rb.AddForce(JUMP_FORCE * rb.mass, ForceMode2D.Impulse);
         isWalking = false;
         rb.freezeRotation = false;
