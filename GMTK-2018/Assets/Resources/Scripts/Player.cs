@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
     private Rigidbody2D rb;
     private Animator anim;
     private Vector2 direction;
+    private CameraController cam;
 
     [SerializeField] private float speed;
     [SerializeField] private Vector2 JUMP_FORCE;  // readonly
@@ -45,6 +46,7 @@ public class Player : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        cam = FindObjectOfType<CameraController>();
         facingRight = true;
         GRAVITY = rb.gravityScale;
         DRAG = rb.drag;
@@ -73,6 +75,7 @@ public class Player : MonoBehaviour
             canDash = false;
 
             //StopCoroutine(dashVanilla);
+            cam.Shake(direction, 0.06f, 0.05f);
             dashVanilla = Dash(direction, DASH_FORCE, DASH_TIME, DASH_DRAG);
             StartCoroutine(dashVanilla);
             
