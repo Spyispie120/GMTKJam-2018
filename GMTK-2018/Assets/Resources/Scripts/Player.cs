@@ -18,7 +18,10 @@ public class Player : MonoBehaviour
     private float DRAG;
 
     private bool facingRight;
+    private Vector2 lastVelocity;
 
+    [SerializeField] private float JUMP_TIMER = 0.1f;
+    private float jumpTimerLeft;
     private bool canJump;
     private bool isJumping;
     private bool jumpKeyHeld;
@@ -33,12 +36,15 @@ public class Player : MonoBehaviour
         facingRight = true;
         GRAVITY = rb.gravityScale;
         DRAG = rb.drag;
+        jumpTimerLeft = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
+        lastVelocity = rb.velocity.normalized;
         direction = GetDashDirection();
+        if (jumpTimerLeft > 0) jumpTimerLeft -= Time.deltaTime;
 
         // dashing
         if (Input.GetKeyDown(KeyCode.J) && canDash && !isDashing)
@@ -48,27 +54,43 @@ public class Player : MonoBehaviour
             //isDashing = true;
             canDash = false;
             
-            StartCoroutine(Dash(direction));
+            StartCoroutine(Dash(direction, DASH_TIME, DASH_DRAG));
             
         }
 
         if (isDashing) return;
 
         // jumping
-        if (Input.GetKeyDown(KeyCode.Space))
+
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            jumpKeyHeld = false;
+        } else if (Input.GetKeyDown(KeyCode.Space)) 
         {
             jumpKeyHeld = true;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space) || jumpTimerLeft > 0)
+        {
+            if (jumpTimerLeft <= 0)
+            {
+                jumpTimerLeft = JUMP_TIMER;
+            }
+
+            //jumpKeyHeld = true;
             if (canJump)
             {
                 Jump();
+                jumpTimerLeft = 0;
             }
-        } else if (Input.GetKeyUp(KeyCode.Space))
-        {
-            jumpKeyHeld = false;
-        } 
+        }
+        //} else if (Input.GetKeyUp(KeyCode.Space))
+        //{
+        //    jumpKeyHeld = false;
+        //} 
     }
 
-    IEnumerator Dash(Vector2 dir)
+    IEnumerator Dash(Vector2 dir, float duration, float drag)
     {
         rb.velocity = Vector2.zero;
         rb.AddForce(dir * DASH_FORCE * rb.mass, ForceMode2D.Impulse);
@@ -79,7 +101,7 @@ public class Player : MonoBehaviour
         rb.drag = DASH_DRAG;
         isDashing = true;
 
-        yield return new WaitForSeconds(DASH_TIME);
+        yield return new WaitForSeconds(duration);
 
         rb.gravityScale = GRAVITY;
         rb.drag = DRAG;
@@ -140,13 +162,7 @@ public class Player : MonoBehaviour
         {
             if (isDashing)
             {
-                //Debug.DrawRay(collision.contacts[0].point, -rb.velocity.normalized);
-                //Debug.DrawRay(collision.contacts[0].point, collision.contacts[0].normal.normalized);
-
-                //Debug.DrawLine(Camera.main.WorldToScreenPoint(collision.contacts[0].point), Vector2.Reflect(rb.velocity.normalized, collision.contacts[0].normal.normalized), Color.red, 3f);
-                //Debug.DrawRay(transform.position, rb.velocity.normalized, Color.green, 1f);
-                //Debug.DrawRay(this.transform.position, collision.gameObject.transform.TransformPoint(collision.contacts[0].point), Color.blue, 1f);
-                StartCoroutine(Dash(collision.contacts[0].point));// Vector2.Reflect(collision.contacts[0].point, collision.contacts[0].normal)));//Vector2.Reflect(rb.velocity.normalized, collision.contacts[0].normal.normalized)));
+                StartCoroutine(Dash(Vector3.Reflect(lastVelocity, collision.contacts[0].normal), 0.1f, 0));
             }
             canDash = true;
         }

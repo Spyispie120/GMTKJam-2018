@@ -328,7 +328,8 @@ MonoBehaviour:
   COUNTER_JUMP_FORCE: {x: 0, y: -15}
   DASH_FORCE: 10
   DASH_DRAG: 15
-  DASH_TIME: 0.25
+  DASH_TIME: 0.2
+  JUMP_TIMER: 0.1
 --- !u!58 &608470867
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -411,7 +412,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
-  m_Material: {fileID: 6200000, guid: 9839435aff8333d4d8fa843dea935211, type: 2}
+  m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
