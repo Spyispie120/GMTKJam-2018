@@ -184,7 +184,7 @@ public class Player : MonoBehaviour
                 
                 rb.freezeRotation = true;
                 transform.rotation = Quaternion.identity;
-                rb.AddForce(Vector2.up * DASH_FORCE);
+                rb.AddForce(Vector2.up * DASH_FORCE * rb.mass * 15);
                 isWalking = true;
                 //StartCoroutine(Dash(Vector2.up, DASH_FORCE / 3, 0.1f, 0.25f));
             }
