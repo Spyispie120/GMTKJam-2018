@@ -136,16 +136,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0ec2f075f2325649be17f13c6e0b4b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 100
+  speed: 150
   JUMP_FORCE: {x: 0, y: 4}
   COUNTER_JUMP_FORCE: {x: 0, y: -15}
-  DASH_FORCE: 15
-  DASH_DRAG: 15
-  DASH_TIME: 0.2
+  DASH_FORCE: 10
+  DASH_DRAG: 4
+  DASH_TIME: 0.15
   TORQUE_FORCE: 5
-  BOUNCE_FORCE: 5
+  BOUNCE_FORCE: 8
   BOUNCE_DRAG: 0.2
-  BOUNCE_TIME: 0.25
+  BOUNCE_TIME: 0.15
   JUMP_TIMER: 0.1
 --- !u!61 &9222969331581943518
 BoxCollider2D:

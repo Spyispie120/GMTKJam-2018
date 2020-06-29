@@ -793,41 +793,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player (1)
       objectReference: {fileID: 0}
-    - target: {fileID: 4224352589655283170, guid: d5f05f024245f91419deaa5ef9c31ac1,
-        type: 3}
-      propertyPath: DASH_FORCE
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 4224352589655283170, guid: d5f05f024245f91419deaa5ef9c31ac1,
-        type: 3}
-      propertyPath: DASH_DRAG
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 4224352589655283170, guid: d5f05f024245f91419deaa5ef9c31ac1,
-        type: 3}
-      propertyPath: DASH_TIME
-      value: 0.15
-      objectReference: {fileID: 0}
-    - target: {fileID: 4224352589655283170, guid: d5f05f024245f91419deaa5ef9c31ac1,
-        type: 3}
-      propertyPath: BOUNCE_FORCE
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 4224352589655283170, guid: d5f05f024245f91419deaa5ef9c31ac1,
-        type: 3}
-      propertyPath: BOUNCE_DRAG
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4224352589655283170, guid: d5f05f024245f91419deaa5ef9c31ac1,
-        type: 3}
-      propertyPath: BOUNCE_TIME
-      value: 0.15
-      objectReference: {fileID: 0}
-    - target: {fileID: 4224352589655283170, guid: d5f05f024245f91419deaa5ef9c31ac1,
-        type: 3}
-      propertyPath: speed
-      value: 150
-      objectReference: {fileID: 0}
     - target: {fileID: 4224352589655283174, guid: d5f05f024245f91419deaa5ef9c31ac1,
         type: 3}
       propertyPath: m_LocalPosition.x
