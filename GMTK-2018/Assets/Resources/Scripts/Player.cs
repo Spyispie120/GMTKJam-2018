@@ -37,6 +37,9 @@ public class Player : MonoBehaviour
 
     private bool isWalking;
 
+    private IEnumerator dashVanilla;
+    private IEnumerator dashBounce;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -48,6 +51,9 @@ public class Player : MonoBehaviour
         jumpTimerLeft = 0;
         isWalking = true;
         rb.freezeRotation = true;
+
+        dashVanilla = Dash(direction, DASH_FORCE, DASH_TIME, DASH_DRAG);
+        dashBounce = Dash(direction, DASH_FORCE, DASH_TIME, DASH_DRAG);
     }
 
     // Update is called once per frame
@@ -65,8 +71,10 @@ public class Player : MonoBehaviour
             //rb.AddForce(direction * DASH_FORCE * rb.mass, ForceMode2D.Impulse);
             //isDashing = true;
             canDash = false;
-            
-            StartCoroutine(Dash(direction, DASH_FORCE, DASH_TIME, DASH_DRAG));
+
+            //StopCoroutine(dashVanilla);
+            dashVanilla = Dash(direction, DASH_FORCE, DASH_TIME, DASH_DRAG);
+            StartCoroutine(dashVanilla);
             
         }
 
@@ -107,8 +115,6 @@ public class Player : MonoBehaviour
     {
         rb.velocity = Vector2.zero;
         rb.AddForce(dir * force * rb.mass, ForceMode2D.Impulse);
-        Debug.Log(rb.velocity);
-        //Debug.DrawRay(transform.position, rb.velocity.normalized, Color.blue, 1f);
 
         isWalking = false;
         rb.freezeRotation = false;
@@ -120,8 +126,7 @@ public class Player : MonoBehaviour
 
         yield return new WaitForSeconds(duration);
 
-        rb.gravityScale = GRAVITY;
-        rb.drag = DRAG;
+        RevertPhysics();
 
         yield return new WaitForSeconds(0.1f);
 
@@ -192,13 +197,32 @@ public class Player : MonoBehaviour
         return new Vector2(horizontal * speed * Time.deltaTime, rb.velocity.y);
     }
 
+    private void RevertPhysics()
+    {
+        rb.gravityScale = GRAVITY;
+        rb.drag = DRAG;
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Floor"))
         {
             if (isDashing)
             {
-                StartCoroutine(Dash(Vector3.Reflect(lastVelocity, collision.contacts[0].normal), BOUNCE_FORCE, BOUNCE_DRAG, BOUNCE_TIME));
+                //dashBounce = Dash(Vector3.Reflect(lastVelocity, collision.contacts[0].normal), BOUNCE_FORCE, BOUNCE_DRAG, BOUNCE_TIME);
+                //StopAllCoroutines();
+                //StopCoroutine(dashVanilla);
+                //isDashing = false;
+                //RevertPhysics();
+                //StartCoroutine(dashBounce);
+
+                // Recursively Dash
+                //StopCoroutine(dashBounce);
+                dashBounce = Dash(Vector3.Reflect(lastVelocity, collision.contacts[0].normal), BOUNCE_FORCE, BOUNCE_DRAG, BOUNCE_TIME);
+                StartCoroutine(dashBounce);
+
+                // AddForce way (doesn't chain)
+                //rb.AddForce(Vector3.Reflect(lastVelocity, collision.contacts[0].normal) * BOUNCE_FORCE * 50 * lastVelocity.magnitude);
             }
             canDash = true;
         }
