@@ -174,7 +174,7 @@ public class Player : MonoBehaviour
     void Jump()
     {
         // CORRECT
-        //isJumping = true;
+        isJumping = true;
         rb.AddForce(JUMP_FORCE * rb.mass, ForceMode2D.Impulse);
         isWalking = false;
         rb.freezeRotation = false;
@@ -233,7 +233,7 @@ public class Player : MonoBehaviour
             canDash = true;
             
             // CORRECT
-            //isJumping = false;
+            isJumping = false;
         }
     }
 
@@ -249,7 +249,7 @@ public class Player : MonoBehaviour
                     isGrounded = true;
 
                     // WRONG
-                    isJumping = false;
+                    //isJumping = false;
                 }
             }
         }
@@ -260,7 +260,7 @@ public class Player : MonoBehaviour
         if (collision.gameObject.CompareTag("Floor"))
         {
             // WRONG
-            isJumping = true;
+            //isJumping = true;
             isGrounded = false;
         }
     }

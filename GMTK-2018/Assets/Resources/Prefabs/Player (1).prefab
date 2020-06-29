@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 9222969331581943508}
   m_Layer: 0
   m_Name: Player (1)
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -143,7 +143,7 @@ MonoBehaviour:
   DASH_DRAG: 4
   DASH_TIME: 0.15
   TORQUE_FORCE: 5
-  BOUNCE_FORCE: 8
+  BOUNCE_FORCE: 5.75
   BOUNCE_DRAG: 0.2
   BOUNCE_TIME: 0.15
   JUMP_TIMER: 0.1
