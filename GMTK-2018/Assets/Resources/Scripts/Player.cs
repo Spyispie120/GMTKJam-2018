@@ -116,6 +116,7 @@ public class Player : MonoBehaviour
 
     IEnumerator Dash(Vector2 dir, float force, float duration, float drag)
     {
+        //isJumping = false;
         rb.velocity = Vector2.zero;
         rb.AddForce(dir * force * rb.mass, ForceMode2D.Impulse);
 
@@ -172,6 +173,8 @@ public class Player : MonoBehaviour
 
     void Jump()
     {
+        // CORRECT
+        //isJumping = true;
         rb.AddForce(JUMP_FORCE * rb.mass, ForceMode2D.Impulse);
         isWalking = false;
         rb.freezeRotation = false;
@@ -228,6 +231,9 @@ public class Player : MonoBehaviour
                 //rb.AddForce(Vector3.Reflect(lastVelocity, collision.contacts[0].normal) * BOUNCE_FORCE * 50 * lastVelocity.magnitude);
             }
             canDash = true;
+            
+            // CORRECT
+            //isJumping = false;
         }
     }
 
@@ -241,9 +247,9 @@ public class Player : MonoBehaviour
                 if (point.normal.y >= 0.05f)
                 {
                     isGrounded = true;
-                    isJumping = false;
 
-                    //canDash = true;
+                    // WRONG
+                    isJumping = false;
                 }
             }
         }
@@ -253,10 +259,9 @@ public class Player : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Floor"))
         {
+            // WRONG
             isJumping = true;
             isGrounded = false;
-            //isWalking = false;
-            //rb.freezeRotation = false;
         }
     }
 }
