@@ -9,6 +9,9 @@ public class Player : MonoBehaviour
     private Vector2 direction;
     private CameraController cam;
 
+    private GhostTrail ghostTrail;
+    private ParticleSystem jumpParticle;
+
     [SerializeField] private float speed;
     [SerializeField] private Vector2 JUMP_FORCE;  // readonly
     [SerializeField] private Vector2 COUNTER_JUMP_FORCE;  // readonly
@@ -21,6 +24,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float BOUNCE_DRAG = 0.1f;
     [SerializeField] private float BOUNCE_TIME = 0.25f;
 
+    [SerializeField] private int numberOfGhostTrail = 3;
     private float GRAVITY;
     private float DRAG;
 
@@ -47,6 +51,10 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         cam = FindObjectOfType<CameraController>();
+
+        ghostTrail = this.GetComponent<GhostTrail>();
+        jumpParticle = transform.GetChild(0).GetComponent<ParticleSystem>();
+
         facingRight = true;
         GRAVITY = rb.gravityScale;
         DRAG = rb.drag;
@@ -117,6 +125,8 @@ public class Player : MonoBehaviour
     IEnumerator Dash(Vector2 dir, float force, float duration, float drag)
     {
         //isJumping = false;
+        ghostTrail.CreateGhostTrail(numberOfGhostTrail);
+
         rb.velocity = Vector2.zero;
         rb.AddForce(dir * force * rb.mass, ForceMode2D.Impulse);
 
@@ -173,6 +183,7 @@ public class Player : MonoBehaviour
 
     void Jump()
     {
+
         // CORRECT
         isJumping = true;
         rb.velocity = new Vector2(rb.velocity.x, 0);  // seems to fix bug where super jumping can be performed
@@ -181,6 +192,7 @@ public class Player : MonoBehaviour
         isWalking = false;
         rb.freezeRotation = false;
         rb.AddTorque(facingRight ? -TORQUE_FORCE : TORQUE_FORCE);
+        CreateDust();
     }
 
     Vector2 Walk()
@@ -211,6 +223,10 @@ public class Player : MonoBehaviour
         rb.drag = DRAG;
     }
 
+    private void CreateDust()
+    {
+        jumpParticle.Play();
+    }
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Floor"))
