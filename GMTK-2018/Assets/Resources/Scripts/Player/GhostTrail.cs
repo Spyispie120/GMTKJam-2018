@@ -36,7 +36,10 @@ public class GhostTrail : MonoBehaviour
         for(int i = 0; i < num; i++)
         {
             GameObject trail = Instantiate(ghostTrailPrefab, transform.position, Quaternion.identity);
-            trail.GetComponent<SpriteRenderer>().sprite = parentSR.sprite;
+            SpriteRenderer sr = trail.GetComponent<SpriteRenderer>();
+            sr.material.SetTexture("Texture", parentSR.sprite.texture);
+            sr.sprite = parentSR.sprite;
+
             Destroy(trail, 0.5f);
             yield return new WaitForSeconds(0.1f);
         }
