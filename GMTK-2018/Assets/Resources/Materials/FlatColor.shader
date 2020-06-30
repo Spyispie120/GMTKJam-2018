@@ -35,8 +35,8 @@
             fixed4 frag(v2f i) : SV_Target
             {
                 fixed4 texcol = tex2D(_MainTex, i.uv);
-                if (texcol.r == 0.0 && texcol.g == 0.0 && texcol.b == 0.0) return (1.0, 1.0, 1.0, 0.0);
-                return texcol * _Color;
+                if (texcol.r == 0.0 && texcol.g == 0.0 && texcol.b == 0.0 && texcol.a == 0.0) return (1.0, 1.0, 1.0, 0.0);
+                return  _Color;
                 //return texcol * _Color;
             }
 
