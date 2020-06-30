@@ -23,7 +23,7 @@ public class GhostTrail : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        //transform.localScale = player.transform.localScale;
     }
 
     public void CreateGhostTrail(int n)
@@ -36,6 +36,8 @@ public class GhostTrail : MonoBehaviour
         for(int i = 0; i < num; i++)
         {
             GameObject trail = Instantiate(ghostTrailPrefab, transform.position, Quaternion.identity);
+            trail.transform.localScale = transform.localScale;
+            trail.transform.localRotation = transform.localRotation;
             trail.GetComponent<SpriteRenderer>().sprite = parentSR.sprite;
             Destroy(trail, 0.5f);
             yield return new WaitForSeconds(0.1f);

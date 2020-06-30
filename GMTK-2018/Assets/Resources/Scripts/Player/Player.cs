@@ -24,7 +24,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float BOUNCE_DRAG = 0.1f;
     [SerializeField] private float BOUNCE_TIME = 0.25f;
 
-    [SerializeField] private int numberOfGhostTrail = 3;
+    [SerializeField] private int NUM_GHOST_TRAIL = 3;
     private float GRAVITY;
     private float DRAG;
 
@@ -125,7 +125,7 @@ public class Player : MonoBehaviour
     IEnumerator Dash(Vector2 dir, float force, float duration, float drag)
     {
         //isJumping = false;
-        ghostTrail.CreateGhostTrail(numberOfGhostTrail);
+        ghostTrail.CreateGhostTrail(NUM_GHOST_TRAIL);
 
         rb.velocity = Vector2.zero;
         rb.AddForce(dir * force * rb.mass, ForceMode2D.Impulse);
@@ -159,6 +159,11 @@ public class Player : MonoBehaviour
         {
             rb.AddForce(COUNTER_JUMP_FORCE * rb.mass);
         }
+    }
+
+    public bool IsRight()
+    {
+        return facingRight;
     }
 
     Vector2 GetDashDirection()
@@ -227,6 +232,7 @@ public class Player : MonoBehaviour
     {
         jumpParticle.Play();
     }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Floor"))
